@@ -46,6 +46,7 @@ class BM25Index:
             for term in query_terms:
                 if term in tf_counts:
                     df_t = self.df.get(term, 0)
+                    # Natural logarithm math.log() per spec formula: ln(1 + (N - df + 0.5)/(df + 0.5))
                     idf = math.log(1 + (self.N - df_t + 0.5) / (df_t + 0.5))
                     tf = tf_counts[term]
                     denom = tf + self.k1 * (1 - self.b + self.b * (doc_len / self.avgdl))
@@ -54,6 +55,5 @@ class BM25Index:
             if score > 0:
                 scores.append((chunk.chunk_id, score))
 
-        # Sort by score descending, then chunk ID ascending
         scores.sort(key=lambda x: (-x[1], x[0]))
         return scores[:top_k]
